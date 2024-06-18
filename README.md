@@ -1,5 +1,5 @@
 - 👋 Hi, I’m @reedmcmullen
-- 👀 I’m interested in stem cell biology, neurodevelopmental biology, evolutionary developmental biology, and technology development. 
+- 👀 I’m interested in stem cell biology, neurodevelopmental biology, evolutionary developmental biology, genomics, and technology development. 
 Email: reed.mcmullen@ucsf.edu
 Twitter: @Reed_McMullen
 LinkedIn: https://www.linkedin.com/in/reed-c-mcmullen/
