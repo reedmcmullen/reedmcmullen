@@ -12,20 +12,28 @@ os.chdir(directory_path)
 #Define string for use in naming saved figures.
 save_name = "_NEMP17"
 
-#Read in the csv defining the sample names and the paths to the filtered feature barcode matrices.
+#Read in the CSV file defining the sample names and the paths to the filtered feature barcode matrices output from 10X Genomics cellranger count pipeline.
 matrices = pd.read_csv("/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/scanpy_NEMP17/filtered_feature_bc_matrix_paths.csv", index_col="sample")
 
-#Read in the 10X genomics gene expression data as Anndata objects and store in a dictionary with sample_name, sample_adata key, value pairs.
+#Read in the 10X genomics gene expression data as Anndata objects and store in a dictionary with sample_name, sample_adata key, value pairs
+#Add the GEMwell metadata to the 'batch' column and make unique indices by appending '-batch' to them.
 adata_dict = {}
-for sample_name, sample_path in matrices.iterrows():
-    print(f'Reading in data for sample: {str(sample)}')
-    adata_dict[sample_name] = sc.read_10x_mtx(sample_path, cache=True)
+for idx, (sample_name, row) in enumerate(matrices.iterrows()):
+    sample_path = row['path']
+    print(f'Reading in data for sample: {sample_name}')
+    adata = sc.read_10x_mtx(sample_path, cache=True)
+    # Modify the index of adata.obs to append the GEMwell number.
+    adata.obs.index = adata.obs.index.str.replace('-1', '', regex=False)
+    adata.obs.index = adata.obs.index + f'-{idx+1}'  # Append '-integer' to each index
+    adata.obs['GEMwell'] = idx+1
+    # Store the modified adata in the dictionary
+    adata_dict[sample_name] = adata
 
-# Concatenate AnnData objects, taking the union of variables (i.e. 'outer' join).
+#Concatenate AnnData objects, taking the union of variables (i.e. 'outer' join).
 print('Concatenating AnnData objects')
 adata = ad.concat(list(adata_dict.values()), join='outer')
 
-# Save initial concatenated AnnData object as a H5AD file.
+#Save initial concatenated AnnData object as a H5AD file.
 results_file_initial = directory_path + '/NEMP17_initial.h5ad'
 adata.write(results_file_initial)
 
@@ -41,13 +49,10 @@ adata.var['mito'] = adata.var_names.str.startswith('MT-')  # annotate the group 
 adata.var['ribo'] = adata.var_names.str.startswith('RPS' or 'RPL') # annotate the group of ribosomal genes as 'ribo'
 sc.pp.calculate_qc_metrics(adata, qc_vars=['mito', 'ribo'], percent_top=None, log1p=False, inplace=True)
 
-#Visualize QC metrics with violin plots.
-sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts', 'pct_counts_mito', 'pct_counts_ribo'], multi_panel=True, stripplot = False, save = save_name + "_qc_metrics.png")
-
 #Define QC cutoffs.
 n_genes_cutoff = 8000
 total_counts_cutoff = 25000
-mito_cutoff = 9
+mito_cutoff = 10
 ribo_cutoff = 5
 
 #Plot violin plots of QC metrics with cutoffs.
@@ -69,11 +74,11 @@ adata = adata[adata.obs.n_genes_by_counts < n_genes_cutoff, :]
 adata = adata[adata.obs.total_counts < total_counts_cutoff, :]
 adata = adata[adata.obs.pct_counts_mito < mito_cutoff, :]
 adata = adata[adata.obs.pct_counts_ribo < ribo_cutoff, :]
-adata
 
-#Save the concatenated AnnData object with the raw counts.
+#Save the concatenated AnnData object with the raw count data and add the raw counts to the layer 'counts'.
 results_file_counts = directory_path + '/NEMP17_counts.h5ad' # the file that will store the analysis results
 adata.write(results_file_counts)
+adata.layers['counts'] = adata.X.copy()
 
 #Normalize to median total counts and logarithmize.
 sc.pp.normalize_total(adata)
