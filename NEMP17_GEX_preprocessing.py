@@ -4,6 +4,7 @@ import scanpy as sc
 import anndata as ad
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 
 #Define and set the current working directory.
 directory_path = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/scanpy_NEMP17'
@@ -104,6 +105,22 @@ sc.tl.leiden(adata, flavor="igraph", n_iterations=2, resolution=res)
 #Save the AnnData object as an H5AD file.
 results_file_preprocessed = directory_path + '/NEMP17_preprocessed.h5ad'
 adata.write(results_file_preprocessed)
+
+#Subset the AnnData object to 10% of cells for faster DEG testing and visualization.
+# Set a seed for reproducibility.
+np.random.seed(42)
+# Calculate 10% of the total number of cells
+n_cells = int(adata.n_obs * 0.1)
+# Randomly sample indices without replacement
+random_indices = np.random.choice(adata.obs.index, size=n_cells, replace=False)
+# Subset the AnnData object
+adata_subset = adata[random_indices].copy()
+adata_subset
+
+#Save the subset AnnData object.
+results_file_preprocessed_subset = directory_path + '/NEMP17_preprocessed_subset.h5ad'
+adata_subset.write(results_file_preprocessed_subset)
+
 
 
 
