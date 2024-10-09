@@ -87,7 +87,7 @@ sc.pp.normalize_total(adata)
 sc.pp.log1p(adata)
 
 #Identify and plot highly variable genes from each AnnData object as an H5AD file.
-sc.pp.highly_variable_genes(adata, n_top_genes=2000, batch_key="batch", flavor='seurat')
+sc.pp.highly_variable_genes(adata, n_top_genes=2000, batch_key="GEMwell", flavor='seurat')
 sc.pl.highly_variable_genes(adata, save=save_name+'.png')
 
 #Perform PCA dimensional reduction.
