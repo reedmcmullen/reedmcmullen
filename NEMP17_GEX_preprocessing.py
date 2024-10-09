@@ -36,17 +36,21 @@ print('Concatenating AnnData objects')
 adata = ad.concat(list(adata_dict.values()), join='outer')
 
 #Save initial concatenated AnnData object as a H5AD file.
+print('Saving initial AnnData object')
 results_file_initial = directory_path + '/NEMP17_initial.h5ad'
 adata.write(results_file_initial)
 
 #Identify highly expressed genes.
+print('Finding highest expressed genes')
 sc.pl.highest_expr_genes(adata, n_top=20)
 
 #Filter out cells based on a very conservative minimum number of genes and cells.
+print('QC filtering of genes and cells')
 sc.pp.filter_cells(adata, min_genes=3)
 sc.pp.filter_genes(adata, min_cells=3)
 
 #Annotate mitochondrial genes and ribosomal genes and calculate QC metrics for each.
+print('QC filtering by QC metrics')
 adata.var['mito'] = adata.var_names.str.startswith('MT-')  # annotate the group of mitochondrial genes as 'mito'
 adata.var['ribo'] = adata.var_names.str.startswith('RPS' or 'RPL') # annotate the group of ribosomal genes as 'ribo'
 sc.pp.calculate_qc_metrics(adata, qc_vars=['mito', 'ribo'], percent_top=None, log1p=False, inplace=True)
@@ -83,31 +87,39 @@ adata.write(results_file_counts)
 adata.layers['counts'] = adata.X.copy()
 
 #Normalize to median total counts and logarithmize.
+print('Normalizing and logarithmizing')
 sc.pp.normalize_total(adata)
 sc.pp.log1p(adata)
 
 #Identify and plot highly variable genes from each AnnData object as an H5AD file.
+print('Finding highly variable genes')
 sc.pp.highly_variable_genes(adata, n_top_genes=2000, batch_key="GEMwell", flavor='seurat')
 sc.pl.highly_variable_genes(adata, save=save_name+'.png')
 
 #Perform PCA dimensional reduction.
+print('Running PCA')
 sc.tl.pca(adata, svd_solver='arpack')
 
 #Compute the nearest neighbors using the knn algorithm.
+print('Running neighbor finding')
 sc.pp.neighbors(adata)
 
 #Compute the umap embedding based on knn-computed neighbors.
+print('Running UMAP')
 sc.tl.umap(adata)
 
 # Cluster umap embeddings using leiden
+print('Leiden clustering')
 res = 1
 sc.tl.leiden(adata, flavor="igraph", n_iterations=2, resolution=res)
 
 #Save the AnnData object as an H5AD file.
+print('Saving preprocessed AnnData object')
 results_file_preprocessed = directory_path + '/NEMP17_preprocessed.h5ad'
 adata.write(results_file_preprocessed)
 
 #Subset the AnnData object to 10% of cells for faster DEG testing and visualization.
+print('Subsetting AnnData object')
 # Set a seed for reproducibility.
 np.random.seed(42)
 # Calculate 10% of the total number of cells
@@ -119,6 +131,7 @@ adata_subset = adata[random_indices].copy()
 adata_subset
 
 #Save the subset AnnData object.
+print('Saving subset of the preprocessed AnnData object')
 results_file_preprocessed_subset = directory_path + '/NEMP17_preprocessed_subset.h5ad'
 adata_subset.write(results_file_preprocessed_subset)
 
