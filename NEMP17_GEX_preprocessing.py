@@ -26,8 +26,10 @@ for idx, (sample_name, row) in enumerate(matrices.iterrows()):
     adata = sc.read_10x_mtx(sample_path, cache=True)
     # Modify the index of adata.obs to append the GEMwell number.
     adata.obs.index = adata.obs.index.str.replace('-1', '', regex=False)
-    adata.obs.index = adata.obs.index + f'-{idx+1}'  # Append '-integer' to each index
-    adata.obs['GEMwell'] = idx+1
+    adata.obs.index = adata.obs.index + f'-{idx+1}'  # Append '-integer' to each index to represent the GEMwell ID.
+    adata.obs['GEMwell'] = idx+1 # Add the GEMwell ID to the column 'GEMwell'
+    adata.obs['GEMwell'] = adata.obs['GEMwell'].astype('category') # Change the data type of the GEMwell column to be categorical.
+
     # Store the modified adata in the dictionary
     adata_dict[sample_name] = adata
 
