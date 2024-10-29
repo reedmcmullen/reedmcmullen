@@ -1,6 +1,6 @@
 ./demux_species_ref.py \
 --k=32 \
---out=human_chimp_orangutan_k32_kmers \
+--out=human_chimp_orangutan_k32 \
 --names=human chimp orangutan \
 --fasta=\
 /wynton/group/pollen/genomes/cellranger/refdata-gex-GRCh38-2024-A/fasta/genome.fa \
