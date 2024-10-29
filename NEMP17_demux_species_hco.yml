@@ -2,18 +2,18 @@
 #
 # Path to the base file name of the unique k-mer files
 #  (this is the -o argument to utils/get_unique_kmers)
-kmers: "/path/to/human_mouse_35"
+kmers: "~/genomes/species_kmers/human_chimp_orangutan_k32"
 # Path to cell barcode whitelist (i.e. from CellRanger)
 #   (can be gzipped)
-whitelist: "/path/to/valid_barcodes.txt.gz"
+whitelist: "~/libraries/3M-february-2018.txt.gz"
 # If demultiplexing ATAC-seq, path to ATAC-seq barcode
 #   whitelist (i.e. from CellRanger). If not, omit
-whitelist_atac: "/path/to/atac_barcodes.txt.gz"
+# whitelist_atac: "/path/to/atac_barcodes.txt.gz"
 
 ##### INPUT DATA #####
 
 # File listing library names, 1 per line
-libs: "libnames.txt"
+libs: "~/libraries/NEMP17_libs.txt"
 # Path to directory containing RNA-seq data
 rna_dir: "/path/to/RNAseq"
 # Path to directory containing ATAC-seq data (or omit)
