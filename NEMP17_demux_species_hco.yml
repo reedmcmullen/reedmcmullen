@@ -17,27 +17,27 @@ libs: "~/libraries/NEMP17_libs.txt"
 # Path to directory containing RNA-seq data
 rna_dir: "/path/to/RNAseq"
 # Path to directory containing ATAC-seq data (or omit)
-atac_dir: "/path/to/ATACseq"
+#atac_dir: "/path/to/ATACseq"
 # If ATAC lib names are different from RNA-seq lib names,
 #   pass a file mapping ATAC seq library to RNA-seq library,
 #   tab separated. If not, omit
-atac_map: "/path/to/ATACseq_to_RNAseq_library_names.txt"
+#atac_map: "/path/to/ATACseq_to_RNAseq_library_names.txt"
 # Path to directory containing custom type (i.e.
 #    CRISPR guide capture, Antibody capture, etc.) reads
-custom_dir: "/path/to/custom_seq"
+#custom_dir: "/path/to/custom_seq"
 # Required if providing custom-type data: first two columns
 #    map custom library name to data type (i.e. "CRISPR").
 #    Third column, mapping custom library name to RNA-seq
 #    library name, is required if names of libraries differ.
-custom_map: "/path/to/custom_to_RNAseq_library_names.txt"
+#custom_map: "/path/to/custom_to_RNAseq_library_names.txt"
 
 ##### SETTINGS #####
 
 # Directory to write output data
-output_directory: "out"
+output_directory: "/wynton/group/pollen/reedmcmullen/run_cellbouncer/run_demux_species/NEMP17"
 # Should cell barcodes have library names appended to them in
 #    the output species assignment files?
-append_libname: true
+append_libname: false
 # Should lib names be appended in CellRanger format (numeric index?)
 cellranger: true
 # Should lib names be prepended to barcodes in Seurat format?
