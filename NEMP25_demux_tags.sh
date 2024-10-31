@@ -1,8 +1,8 @@
 #!/bin/bash
 #$ -V
 #$ -S /bin/bash                                                 # Specifies shell for job script as /bin/bash
-#$ -e /wynton/scratch/rmcmullen/NEMP25_demux_tags		            # Directs error output to specified directory.
-#$ -o /wynton/scratch/rmcmullen/NEMP25_demux_tags		            # Directs output to the specified directory.
+#$ -e /wynton/scratch/rmcmullen/NEMP25_demux_tags		        # Directs error output to specified directory.
+#$ -o /wynton/scratch/rmcmullen/NEMP25_demux_tags		        # Directs output to the specified directory.
 #$ -j y                                                         # Joins error and output into a single file.
 #$ -cwd                                                         # Executes job from the current working dir.
 #$ -l mem_free=50G                                              # Requests n Gigabytes of free memory.
@@ -12,12 +12,12 @@
 #$ -t 1-14                                                      # Define the array job range.
 
 # Define the required variables.
-FASTQ_DIR="/wynton/group/pollen/reads/RMAP05"  					                        # Directory containing the fastq files.
+FASTQ_DIR="/wynton/group/pollen/reads/RMAP05"  					                    # Directory containing the fastq files.
 PROGRAM_DIR="/wynton/home/pollenlab/reedmcmullen/utils/cellbouncer"  		        # Directory containing the demux_species program.
-WHITELIST="/wynton/home/pollenlab/reedmcmullen/libraries/3M-february-2018.txt"  # File of 10X Genomics' whitelist for scRNA-seq GEX barcodes.
-LIBS_FILE="/wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_samples.txt" # File of MULTI-seq samples, one per line.
-SEQS_FILE="/wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_seqs.txt"	  # File of MULTI-seq sequences.
-NAMES_FILE="/wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_names.txt"  # File of MULTI-seq names.
+WHITELIST="/wynton/home/pollenlab/reedmcmullen/libraries/3M-february-2018.txt"      # File of 10X Genomics' whitelist for scRNA-seq GEX barcodes.
+LIBS_FILE="/wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_samples.txt"     # File of MULTI-seq samples, one per line.
+SEQS_FILE="/wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_seqs.txt"	    # File of MULTI-seq sequences.
+NAMES_FILE="/wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_names.txt"      # File of MULTI-seq names.
 OUT_DIR="/wynton/scratch/rmcmullen/NEMP25_demux_tags/Outs"
 
 # Activate the conda environment.
