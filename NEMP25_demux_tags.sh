@@ -51,7 +51,7 @@ cat "$READS_ARGS"
 --output "${OUT_DIR}/${SAMPLE}" \
 $(cat "$READS_ARGS") \
 --whitelist "$WHITELIST" \
---names "$NAMES_FILE" \
+--names "$NAMES_FILE"
 
 # Deactivate the conda environment.
 conda deactivate
