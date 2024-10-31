@@ -48,7 +48,7 @@ cat "$READS_ARGS"
 
 # Run the demux_tags program.
 ./demux_tags \
---output "${OUT_DIR}/${SAMPLE}" \
+-o "${OUT_DIR}/${SAMPLE}" \
 $(cat "$READS_ARGS") \
 --whitelist "$WHITELIST" \
 --names "$NAMES_FILE"
