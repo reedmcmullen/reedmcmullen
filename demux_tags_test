@@ -1,8 +1,8 @@
 ./demux_tags \
--o /wynton/scratch/rmcmullen/NEMP25_demux_tags/Outs \
+-o /wynton/scratch/rmcmullen/NEMP25_demux_tags/Outs/NEMP25_MS_t1_1 \
 -1 /wynton/group/pollen/reads/RMAP05/NEMP25_MS_t1_1_S15_L001_R1_001.fastq.gz \
 -2 /wynton/group/pollen/reads/RMAP05/NEMP25_MS_t1_1_S15_L001_R2_001.fastq.gz \
 -w /wynton/home/pollenlab/reedmcmullen/libraries/3M-february-2018.txt \
--N /wynton/home/pollenlab/reedmcmullen/libraries\NEMP25_MS_names.txt \
--s /wynton/home/pollenlab/reedmcmullen/libraries\NEMP25_MS_seqs.txt
-
+-N /wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_names.txt \
+-s /wynton/home/pollenlab/reedmcmullen/libraries/NEMP25_MS_seqs.txt \
+-e
