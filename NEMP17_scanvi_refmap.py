@@ -144,6 +144,58 @@ sc.tl.leiden(adata_concat)
 sc.tl.umap(adata_concat)
 sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'{save_name}_ref_query_concat_X_scVI.png')
 
+#Load scvi model from reference dataset.
+scvi_ref = scvi.model.SCVI.load(directory_path + '/ref_scvi_model/', adata_ref)
+
+#Load in cluster AutoAnnotations.
+cluster_id_df = pd.read_excel(directory_path + '/science.adf1226_table_s2.xlsx', index_col='PoolOrder')
+cluster_id_df = cluster_id_df[cluster_id_df['ClusterID (PoolClean)']!= '--']
+cluster_id_df['ClusterID (PoolClean)'] = cluster_id_df['ClusterID (PoolClean)'].astype(str)
+mapping = cluster_id_df.set_index('ClusterID (PoolClean)')['AutoAnnotation']
+adata_ref.obs['AutoAnnotation'] = adata_ref.obs['cluster_id'].map(mapping)
+adata_ref.obs['AutoAnnotation'] = adata_ref.obs['AutoAnnotation'].astype(str)
+adata_ref.obs['cluster_id'] = adata_ref.obs['cluster_id'].astype(str)
+adata_ref.obs['cluster_id_annotation'] = 'Clust' + adata_ref.obs['cluster_id'] + ' ' + adata_ref.obs['AutoAnnotation']
+
+#Train reference scANVI model.
+scanvi_ref = scvi.model.SCANVI.from_scvi_model(scvi_ref, unlabeled_category="Unknown", labels_key="labels_scanvi")
+scanvi_ref.train(max_epochs=20, n_samples_per_label=100)
+
+#Save the scanvi reference model
+scanvi_ref.save(directory_path + '/ref_scanvi_model/', overwrite=True)
+
+#Run neighbor finding (using latent representation), leiden clustering, and umap.
+adata_ref.obsm["X_scANVI"] = scanvi_ref.get_latent_representation()
+sc.pp.neighbors(adata_ref, use_rep="X_scANVI")
+sc.tl.leiden(adata_ref)
+sc.tl.umap(adata_ref)
+sc.pl.umap(adata_ref, color=['leiden', 'CellClass', 'Subregion', 'TopLevelCluster'], ncols=2, wspace=0.5, save=f'{save_name}_ref_X_scANVI.png')
+
+#Save subset and preprocessed reference dataset with scVI and scANVI latent representations.
+ref_preprocessed = directory_path + '/ref_preprocessed.h5ad'
+adata_ref.write(ref_preprocessed, compression='gzip')
+
+#Set up and train the query scANVI model.
+scanvi_query = scvi.model.SCANVI.load_query_data(adata_query, scanvi_ref_path)
+scanvi_query.train(max_epochs=100, plan_kwargs={"weight_decay": 0.0}, check_val_every_n_epoch=10)
+
+#Add scANVI latent represetnations to anndata object.
+adata_query.obsm["predictions_scANVI"] = scanvi_query.get_latent_representation()
+adata_query.obs["predictions_scANVI"] = scanvi_query.predict()
+
+#Save the subset and preprocessed query dataset with scVI and scANVI latent representations.
+query_preprocessed = directory_path + '/query_preprocessed.h5ad'
+adata_query.write(query_preprocessed, compression='gzip')
+
+#Concatenate the refernce and query datasets.
+adata = anndata.concat([adata_ref, adata_query], join='outer', keys=['reference', 'query'], label='dataset')
+
+#Run neighbor finding (using latent representation), leiden clustering, and umap.
+sc.pp.neighbors(adata, use_rep="predictions_scANVI")
+sc.tl.leiden(adata)
+sc.tl.umap(adata)
+
+
 
 
 
