@@ -11,12 +11,12 @@ import torch
 import random
 
 #Define working directory and settings.
-sc.set_figure_params(figsize=(6, 6), frameon=False)
+sc.set_figure_params(figsize=(8, 8), frameon=True)
 torch.set_float32_matmul_precision("high")
 directory_path = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/refmap_NEMP17'
 os.chdir(directory_path)
 
-#Load and format reference dataset
+#Load and format reference dataset.
 adata_ref = sc.read_h5ad('/wynton/group/pollen/jding/Sara/linnarsson/human_dev_GRCh38-3.0.0.h5ad')
 for col in ['CellClass', 'Region', 'Subdivision', 'Subregion', 'Tissue', 'donor_id', 'dissection', 'sample_id',]:
     adata_ref.obs[col] = adata_ref.obs[col].str[2:-1]
@@ -72,8 +72,7 @@ query_preprocessed = directory_path + '/query_preprocessed.h5ad'
 adata_query.write(query_preprocessed, compression='gzip')
 
 #Plot both datasets.
-plt.rcParams["figure.figsize"] = (8, 8)
-sc.pl.umap(adata_query, color='leiden', legend_loc='on data', save=f'{save_name}_query_X_pca.png')
+sc.pl.umap(adata_query, color='leiden', save=f'{save_name}_query_X_pca.png')
 sc.pl.umap(adata_ref, color=['CellClass', 'Subregion', 'TopLevelCluster'], wspace=0.5, save=f'{save_name}_ref_X_pca.png')
 
 #Subset the reference and query datasets to the HVGs in the query dataset.
@@ -88,12 +87,11 @@ query_preprocessed = directory_path + '/query_preprocessed.h5ad'
 adata_query.write(query_preprocessed, compression='gzip')
 
 #Train reference scVI model.
-adata_ref = adata_ref.copy()
 scvi.model.SCVI.setup_anndata(adata_ref, batch_key='sample_id', layer='counts')
 scvi_ref = scvi.model.SCVI(adata_ref, use_layer_norm="both", use_batch_norm="none", encode_covariates=True, dropout_rate=0.2, n_layers=2)
 scvi_ref.train()
 
-#Save the reference model
+#Save the reference scVI model.
 scvi_ref.save(directory_path + '/ref_scvi_model/', overwrite=True)
 
 #Run neighbor finding (using latent representation), leiden clustering, and umap.
@@ -108,11 +106,8 @@ ref_preprocessed = directory_path + '/ref_preprocessed.h5ad'
 adata_ref.write(ref_preprocessed, compression='gzip')
 
 #Update the reference scVI model with the query dataset
-#Load a new model with the query data using the saved reference model.
-scvi.model.SCVI.prepare_query_anndata(adata_query, directory_path + '/ref_scvi_model/')
 adata_query.obs['sample_id'] = adata_query.obs['GEMwell'].astype(str)
-
-#Create the new query model instance.
+scvi.model.SCVI.prepare_query_anndata(adata_query, directory_path + '/ref_scvi_model/')
 scvi_query = scvi.model.SCVI.load_query_data(adata_query, directory_path + '/ref_scvi_model/')
 
 #Train the query data.
@@ -121,11 +116,10 @@ scvi_query.train(max_epochs=200, plan_kwargs={"weight_decay": 0.0})
 #Save the reference model
 scvi_query.save(directory_path + '/query_scvi_model/', overwrite=True)
 
-#Get the latent representation as save to .obsm.
-adata_query.obsm["X_scVI"] = scvi_query.get_latent_representation()
 #Run neighbor finding (using latent representation), leiden clustering, and umap.
+adata_query.obsm["X_scVI"] = scvi_query.get_latent_representation()
 sc.pp.neighbors(adata_query, use_rep="X_scVI")
-sc.tl.leiden(adata_query)
+sc.tl.leiden(adata_query, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_query)
 sc.pl.umap(adata_query, color='leiden', save=f'{save_name}_query_X_scVI.png')
 
@@ -158,6 +152,7 @@ adata_ref.obs['cluster_id'] = adata_ref.obs['cluster_id'].astype(str)
 adata_ref.obs['cluster_id_annotation'] = 'Clust' + adata_ref.obs['cluster_id'] + ' ' + adata_ref.obs['AutoAnnotation']
 
 #Train reference scANVI model.
+adata_ref.obs["labels_scanvi"] = adata_ref.obs["cluster_id_annotation"].values
 scanvi_ref = scvi.model.SCANVI.from_scvi_model(scvi_ref, unlabeled_category="Unknown", labels_key="labels_scanvi")
 scanvi_ref.train(max_epochs=20, n_samples_per_label=100)
 
@@ -179,6 +174,9 @@ adata_ref.write(ref_preprocessed, compression='gzip')
 scanvi_query = scvi.model.SCANVI.load_query_data(adata_query, scanvi_ref_path)
 scanvi_query.train(max_epochs=100, plan_kwargs={"weight_decay": 0.0}, check_val_every_n_epoch=10)
 
+#Save the scanvi query model.
+scanvi_query.save(directory_path + '/query_scanvi_model/', overwrite=True)
+
 #Add scANVI latent represetnations to anndata object.
 adata_query.obsm["predictions_scANVI"] = scanvi_query.get_latent_representation()
 adata_query.obs["predictions_scANVI"] = scanvi_query.predict()
@@ -187,13 +185,19 @@ adata_query.obs["predictions_scANVI"] = scanvi_query.predict()
 query_preprocessed = directory_path + '/query_preprocessed.h5ad'
 adata_query.write(query_preprocessed, compression='gzip')
 
-#Concatenate the refernce and query datasets.
-adata = anndata.concat([adata_ref, adata_query], join='outer', keys=['reference', 'query'], label='dataset')
+#Concatenate the refernce and query datasets and save.
+adata_concat = anndata.concat([adata_ref, adata_query], join='outer', keys=['reference', 'query'], label='dataset')
+adata_concat.uns['dataset_colors'] = ['#D3D3D3', '#000000']
 
 #Run neighbor finding (using latent representation), leiden clustering, and umap.
-sc.pp.neighbors(adata, use_rep="predictions_scANVI")
-sc.tl.leiden(adata)
-sc.tl.umap(adata)
+sc.pp.neighbors(adata_concat, use_rep="predictions_scANVI")
+sc.tl.leiden(adata_concat)
+sc.tl.umap(adata_concat)
+sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'{save_name}_ref_query_concat_X_scVI.png')
+
+#Save the concatenated reference and query datasets.
+ref_query_concat = directory_path + '/ref_query_concat_scanvi.h5ad'
+adata_concat.write(ref_query_concat, compression='gzip')
 
 
 
