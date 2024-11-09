@@ -15,6 +15,7 @@ sc.set_figure_params(figsize=(8, 8), frameon=True)
 torch.set_float32_matmul_precision("high")
 directory_path = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/refmap_NEMP17'
 os.chdir(directory_path)
+save_name='NEMP17'
 
 #Load and format reference dataset.
 adata_ref = sc.read_h5ad('/wynton/group/pollen/jding/Sara/linnarsson/human_dev_GRCh38-3.0.0.h5ad')
