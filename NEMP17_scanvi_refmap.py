@@ -48,8 +48,8 @@ adata_ref.write(ref_initial, compression='gzip')
 if not adata_ref.var_names.is_unique:
     adata_ref.var.index = pd.Index(adata_ref.var.index).astype(str)  # Ensure var.index is a standard Index
     adata_ref.var_names_make_unique()
-sc.pp.filter_cells(adata, min_genes=100)
-sc.pp.filter_genes(adata, min_cells=10)
+sc.pp.filter_cells(adata_ref, min_genes=100)
+sc.pp.filter_genes(adata_ref, min_cells=10)
 sc.pp.normalize_total(adata_ref, exclude_highly_expressed=True)
 sc.pp.log1p(adata_ref)
 sc.pp.highly_variable_genes(adata_ref, flavor='seurat', batch_key='sample_id', subset=False)
