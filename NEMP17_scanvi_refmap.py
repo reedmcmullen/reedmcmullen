@@ -152,10 +152,9 @@ mapping = cluster_id_df.set_index('ClusterID (PoolClean)')['AutoAnnotation']
 adata_ref.obs['AutoAnnotation'] = adata_ref.obs['cluster_id'].map(mapping)
 adata_ref.obs['AutoAnnotation'] = adata_ref.obs['AutoAnnotation'].astype(str)
 adata_ref.obs['cluster_id'] = adata_ref.obs['cluster_id'].astype(str)
-adata_ref.obs['cluster_id_annotation'] = 'Clust' + adata_ref.obs['cluster_id'] + ' ' + adata_ref.obs['AutoAnnotation']
 
 #Train reference scANVI model.
-adata_ref.obs["labels_scanvi"] = adata_ref.obs["cluster_id_annotation"].values
+adata_ref.obs["labels_scanvi"] = adata_ref.obs["AutoAnnotation"].values
 scanvi_ref = scvi.model.SCANVI.from_scvi_model(scvi_ref, unlabeled_category="Unknown", labels_key="labels_scanvi")
 scanvi_ref.train(max_epochs=20, n_samples_per_label=100)
 
@@ -174,7 +173,7 @@ ref_preprocessed = directory_path + '/ref_preprocessed.h5ad'
 adata_ref.write(ref_preprocessed, compression='gzip')
 
 #Set up and train the query scANVI model.
-scanvi_query = scvi.model.SCANVI.load_query_data(adata_query, scanvi_ref_path)
+scanvi_query = scvi.model.SCANVI.load_query_data(adata_query, directory_path + '/ref_scanvi_model/')
 scanvi_query.train(max_epochs=100, plan_kwargs={"weight_decay": 0.0}, check_val_every_n_epoch=10)
 
 #Save the scanvi query model.
@@ -201,29 +200,3 @@ sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset
 #Save the concatenated reference and query datasets.
 ref_query_concat = directory_path + '/ref_query_concat_scanvi.h5ad'
 adata_concat.write(ref_query_concat, compression='gzip')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
