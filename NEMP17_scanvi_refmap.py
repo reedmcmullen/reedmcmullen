@@ -73,8 +73,8 @@ query_preprocessed = directory_path + '/query_preprocessed.h5ad'
 adata_query.write(query_preprocessed, compression='gzip')
 
 #Plot both datasets.
-sc.pl.umap(adata_query, color='leiden', save=f'{save_name}_query_X_pca.png')
-sc.pl.umap(adata_ref, color=['CellClass', 'Subregion', 'TopLevelCluster'], wspace=0.5, save=f'{save_name}_ref_X_pca.png')
+sc.pl.umap(adata_query, color='leiden', save=f'_{save_name}_query_X_pca.png')
+sc.pl.umap(adata_ref, color=['CellClass', 'Subregion', 'TopLevelCluster'], wspace=0.5, save=f'_{save_name}_ref_X_pca.png')
 
 #Subset the reference and query datasets to the HVGs in the query dataset.
 shared_var_names = adata_ref.var_names.intersection(adata_query.var_names[adata_query.var['highly_variable']])
@@ -100,7 +100,7 @@ adata_ref.obsm["X_scVI"] = scvi_ref.get_latent_representation()
 sc.pp.neighbors(adata_ref, use_rep="X_scVI")
 sc.tl.leiden(adata_ref, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_ref)
-sc.pl.umap(adata_ref, color=['CellClass', 'Region', 'Subregion', 'TopLevelCluster'], ncols=2, wspace=0.5, save=f'{save_name}_ref_X_scVI.png')
+sc.pl.umap(adata_ref, color=['CellClass', 'Region', 'Subregion', 'TopLevelCluster'], ncols=2, wspace=0.5, save=f'_{save_name}_ref_X_scVI.png')
 
 #Save subset and preprocessed reference dataset with scVI latent representations.
 ref_preprocessed = directory_path + '/ref_preprocessed.h5ad'
@@ -122,7 +122,7 @@ adata_query.obsm["X_scVI"] = scvi_query.get_latent_representation()
 sc.pp.neighbors(adata_query, use_rep="X_scVI")
 sc.tl.leiden(adata_query, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_query)
-sc.pl.umap(adata_query, color='leiden', save=f'{save_name}_query_X_scVI.png')
+sc.pl.umap(adata_query, color='leiden', save=f'_{save_name}_query_X_scVI.png')
 
 #Save the subset and preprocessed query dataset with the scVI latent representation.
 query_preprocessed = directory_path + '/query_preprocessed.h5ad'
@@ -137,7 +137,7 @@ adata_concat = anndata.concat([adata_ref, adata_query], join='outer', keys=['ref
 sc.pp.neighbors(adata_concat, use_rep="X_scVI")
 sc.tl.leiden(adata_concat)
 sc.tl.umap(adata_concat)
-sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'{save_name}_ref_query_concat_X_scVI.png')
+sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'_{save_name}_ref_query_concat_X_scVI.png')
 
 #Load scvi model from reference dataset.
 scvi_ref = scvi.model.SCVI.load(directory_path + '/ref_scvi_model/', adata_ref)
@@ -165,7 +165,7 @@ adata_ref.obsm["X_scANVI"] = scanvi_ref.get_latent_representation()
 sc.pp.neighbors(adata_ref, use_rep="X_scANVI")
 sc.tl.leiden(adata_ref)
 sc.tl.umap(adata_ref)
-sc.pl.umap(adata_ref, color=['leiden', 'CellClass', 'Subregion', 'TopLevelCluster'], ncols=2, wspace=0.5, save=f'{save_name}_ref_X_scANVI.png')
+sc.pl.umap(adata_ref, color=['leiden', 'CellClass', 'Subregion', 'TopLevelCluster'], ncols=2, wspace=0.5, save=f'_{save_name}_ref_X_scANVI.png')
 
 #Save subset and preprocessed reference dataset with scVI and scANVI latent representations.
 ref_preprocessed = directory_path + '/ref_preprocessed.h5ad'
@@ -194,7 +194,7 @@ adata_concat.uns['dataset_colors'] = ['#D3D3D3', '#000000']
 sc.pp.neighbors(adata_concat, use_rep="predictions_scANVI")
 sc.tl.leiden(adata_concat)
 sc.tl.umap(adata_concat)
-sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'{save_name}_ref_query_concat_X_scVI.png')
+sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'_{save_name}_ref_query_concat_X_scVI.png')
 
 #Save the concatenated reference and query datasets.
 ref_query_concat = directory_path + '/ref_query_concat_scanvi.h5ad'
