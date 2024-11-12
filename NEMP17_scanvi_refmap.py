@@ -48,6 +48,8 @@ adata_ref.write(ref_initial, compression='gzip')
 if not adata_ref.var_names.is_unique:
     adata_ref.var.index = pd.Index(adata_ref.var.index).astype(str)  # Ensure var.index is a standard Index
     adata_ref.var_names_make_unique()
+sc.pp.filter_cells(adata, min_genes=100)
+sc.pp.filter_genes(adata, min_cells=10)
 sc.pp.normalize_total(adata_ref, exclude_highly_expressed=True)
 sc.pp.log1p(adata_ref)
 sc.pp.highly_variable_genes(adata_ref, flavor='seurat', batch_key='sample_id', subset=False)
@@ -135,7 +137,7 @@ adata_concat = anndata.concat([adata_ref, adata_query], join='outer', keys=['ref
 
 #Run neighbor finding (using latent representation), leiden clustering, and umap.
 sc.pp.neighbors(adata_concat, use_rep="X_scVI")
-sc.tl.leiden(adata_concat)
+sc.tl.leiden(adata_concat, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_concat)
 sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'_{save_name}_ref_query_concat_X_scVI.png')
 
@@ -163,7 +165,7 @@ scanvi_ref.save(directory_path + '/ref_scanvi_model/', overwrite=True)
 #Run neighbor finding (using latent representation), leiden clustering, and umap.
 adata_ref.obsm["X_scANVI"] = scanvi_ref.get_latent_representation()
 sc.pp.neighbors(adata_ref, use_rep="X_scANVI")
-sc.tl.leiden(adata_ref)
+sc.tl.leiden(adata_ref, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_ref)
 sc.pl.umap(adata_ref, color=['leiden', 'CellClass', 'Subregion', 'TopLevelCluster'], ncols=2, wspace=0.5, save=f'_{save_name}_ref_X_scANVI.png')
 
@@ -192,7 +194,7 @@ adata_concat.uns['dataset_colors'] = ['#D3D3D3', '#000000']
 
 #Run neighbor finding (using latent representation), leiden clustering, and umap.
 sc.pp.neighbors(adata_concat, use_rep="predictions_scANVI")
-sc.tl.leiden(adata_concat)
+sc.tl.leiden(adata_concat, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_concat)
 sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'_{save_name}_ref_query_concat_X_scVI.png')
 
