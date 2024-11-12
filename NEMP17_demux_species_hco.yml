@@ -2,10 +2,10 @@
 #
 # Path to the base file name of the unique k-mer files
 #  (this is the -o argument to utils/get_unique_kmers)
-kmers: "~/genomes/species_kmers/human_chimp_orangutan_k32"
+kmers: "/wynton/home/pollenlab/reedmcmullen/genomes/species_kmers/human_chimp_orangutan_k32"
 # Path to cell barcode whitelist (i.e. from CellRanger)
 #   (can be gzipped)
-whitelist: "~/libraries/3M-february-2018.txt.gz"
+whitelist: "/wynton/home/pollenlab/reedmcmullen/libraries/3M-february-2018.txt"
 # If demultiplexing ATAC-seq, path to ATAC-seq barcode
 #   whitelist (i.e. from CellRanger). If not, omit
 # whitelist_atac: "/path/to/atac_barcodes.txt.gz"
@@ -13,9 +13,9 @@ whitelist: "~/libraries/3M-february-2018.txt.gz"
 ##### INPUT DATA #####
 
 # File listing library names, 1 per line
-libs: "~/libraries/NEMP17_libs.txt"
+libs: "/wynton/home/pollenlab/reedmcmullen/libraries/NEMP17_libs_hco.txt"
 # Path to directory containing RNA-seq data
-rna_dir: "/path/to/RNAseq"
+rna_dir: "/wynton/scratch/rmcmullen/NEMP17_demux_species/fastqs"
 # Path to directory containing ATAC-seq data (or omit)
 #atac_dir: "/path/to/ATACseq"
 # If ATAC lib names are different from RNA-seq lib names,
@@ -34,7 +34,7 @@ rna_dir: "/path/to/RNAseq"
 ##### SETTINGS #####
 
 # Directory to write output data
-output_directory: "/wynton/group/pollen/reedmcmullen/run_cellbouncer/run_demux_species/NEMP17"
+output_directory: "/wynton/scratch/rmcmullen/NEMP17_demux_species/NEMP17_hco"
 # Should cell barcodes have library names appended to them in
 #    the output species assignment files?
 append_libname: false
@@ -52,7 +52,7 @@ demux_reads: true
 # Should reads being demultiplexed (if demux_reads: true) be split
 #    into pieces, demultiplexed, and then joined back together? 
 #    Default = true
-demux_pieces: true
+demux_pieces: false
 # How many parallel threads should each job be given? 
 threads: 1
 # What is the maximum expected memory consumption per job in the 
