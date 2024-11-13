@@ -12,7 +12,7 @@ directory_path = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/scanpy_NEM
 os.chdir(directory_path)
 
 #Define string for use in naming saved figures.
-save_name = "_NEMP17"
+save_name = "NEMP17"
 
 #Read in the CSV file defining the sample names and the paths to the filtered feature barcode matrices output from 10X Genomics cellranger count pipeline.
 matrices = pd.read_csv("/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/scanpy_NEMP17/filtered_feature_bc_matrix_paths.csv", index_col="sample")
@@ -29,7 +29,6 @@ for idx, (sample_name, row) in enumerate(matrices.iterrows()):
     adata.obs.index = adata.obs.index + f'-{idx+1}'  # Append '-integer' to each index to represent the GEMwell ID.
     adata.obs['GEMwell'] = idx+1 # Add the GEMwell ID to the column 'GEMwell'
     adata.obs['GEMwell'] = adata.obs['GEMwell'].astype('category') # Change the data type of the GEMwell column to be categorical.
-
     # Store the modified adata in the dictionary
     adata_dict[sample_name] = adata
 
@@ -48,8 +47,8 @@ sc.pl.highest_expr_genes(adata, n_top=20)
 
 #Filter out cells based on a very conservative minimum number of genes and cells.
 print('QC filtering of genes and cells')
-sc.pp.filter_cells(adata, min_genes=3)
-sc.pp.filter_genes(adata, min_cells=3)
+sc.pp.filter_cells(adata, min_genes=100)
+sc.pp.filter_genes(adata, min_cells=10)
 
 #Annotate mitochondrial genes and ribosomal genes and calculate QC metrics for each.
 print('QC filtering by QC metrics')
@@ -58,9 +57,9 @@ adata.var['ribo'] = adata.var_names.str.startswith('RPS' or 'RPL') # annotate th
 sc.pp.calculate_qc_metrics(adata, qc_vars=['mito', 'ribo'], percent_top=None, log1p=False, inplace=True)
 
 #Define QC cutoffs.
-n_genes_cutoff = 8000
-total_counts_cutoff = 25000
-mito_cutoff = 10
+n_genes_cutoff = 10000
+total_counts_cutoff = 40000
+mito_cutoff = 12
 ribo_cutoff = 5
 
 #Plot violin plots of QC metrics with cutoffs.
@@ -75,7 +74,7 @@ sc.pl.violin(adata, 'pct_counts_ribo', ax=axes[3], stripplot=False, show=False)
 axes[3].axhline(ribo_cutoff, color='red', linestyle='--')
 #Save the figure
 plt.tight_layout()
-plt.savefig(save_name+'_qc_metrics_cutoffs.png')
+plt.savefig(f'_{save_name}_qc_metrics_cutoffs.png')
 
 #Filter outlier cells from each AnnData object based on QC metric plots.
 adata = adata[adata.obs.n_genes_by_counts < n_genes_cutoff, :]
@@ -96,7 +95,7 @@ sc.pp.log1p(adata)
 #Identify and plot highly variable genes from each AnnData object as an H5AD file.
 print('Finding highly variable genes')
 sc.pp.highly_variable_genes(adata, n_top_genes=2000, batch_key="GEMwell", flavor='seurat')
-sc.pl.highly_variable_genes(adata, save=save_name+'.png')
+sc.pl.highly_variable_genes(adata, save=f'_{save_name}.png')
 
 #Perform PCA dimensional reduction.
 print('Running PCA')
