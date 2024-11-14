@@ -192,7 +192,7 @@ adata_concat = anndata.concat([adata_ref, adata_query], join='outer', keys=['ref
 adata_concat.uns['dataset_colors'] = ['#D3D3D3', '#000000']
 
 #Run neighbor finding (using latent representation), leiden clustering, and umap.
-sc.pp.neighbors(adata_concat, use_rep="predictions_scANVI")
+sc.pp.neighbors(adata_concat, use_rep="X_scANVI")
 sc.tl.leiden(adata_concat, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_concat)
 sc.pl.umap(adata_concat, color=['leiden', 'query_leiden', 'ref_leiden', 'dataset', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=1, save=f'_{save_name}_ref_query_concat_X_scVI.png')
