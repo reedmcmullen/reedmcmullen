@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 #Import required packages and modules.
+#Import required packages and modules.
 import pandas as pd
 import scanpy as sc
+import scanpy.external as sce
 import anndata as ad
 import matplotlib.pyplot as plt
 import os
@@ -23,4 +25,3 @@ adata.obsm['X_pca'] = adata.obsm['X_pca_harmony']
 
 anndata = directory_path + '/NEMP17.h5ad'
 adata.write(anndata)
-adata
