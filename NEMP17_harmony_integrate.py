@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 
+#Define and set the current working directory.
+directory_path = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/scanpy_NEMP17'
+os.chdir(directory_path)
+
 #Read in concatenated, preprocessed data from a H5AD file to an AnnData object.
 anndata = directory_path + '/NEMP17.h5ad'
 adata = sc.read_h5ad(anndata)
