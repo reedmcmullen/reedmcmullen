@@ -69,6 +69,7 @@ scanvi_query.train(max_epochs=100, plan_kwargs={"weight_decay": 0.0}, check_val_
 scanvi_query.save(directory_path + '/query_scanvi_model/', overwrite=True)
 
 #Add scANVI latent representation embeddings to anndata object.
+print('Predicting annotations for query dataset...')
 adata_query.obsm["predictions_scANVI"] = scanvi_query.get_latent_representation()
 adata_query.obs["predictions_scANVI"] = scanvi_query.predict()
 query_preprocessed = directory_path + '/query_preprocessed.h5ad'
