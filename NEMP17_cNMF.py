@@ -35,6 +35,7 @@ cnmf_obj.combine()
 cnmf_obj.k_selection_plot(close_fig=False)
 selected_K = 22
 density_threshold = 2.00
+print('Running cNMF consensus finding...')
 cnmf_obj.consensus(k=selected_K, density_threshold=density_threshold, show_clustering=True, close_clustergram_fig=False)
 density_threshold = 0.3
 cnmf_obj.consensus(k=selected_K, density_threshold=density_threshold, show_clustering=True, close_clustergram_fig=False)
