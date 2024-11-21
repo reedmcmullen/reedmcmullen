@@ -17,11 +17,11 @@ n_iter=200 #Number of NMF replicates.
 num_highvar_genes=2000 #Number of over-dispersed genes to use.
 K = ' '.join([str(i) for i in range(15,30)]) #Specify the Ks to use as a space separated list in this case "5 6 7 8 9 10".
 seed = 14 #Specify a seed pseudorandom number generation for reproducibility
+anndata = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/cnmf_NEMP17/NEMP17_counts.h5ad'
 count_fn= anndata
 
 #Load the dataset.
 print('Loading the dataset...')
-anndata = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/scanpy_NEMP17/NEMP17.h5ad'
 adata = sc.read_h5ad(anndata)
 
 #Run cNMF
