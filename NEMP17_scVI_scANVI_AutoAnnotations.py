@@ -62,7 +62,7 @@ sc.pl.umap(adata_query, color=['cell_class', 'cell_type', 'leiden'], ncols=3, ws
 query_preprocessed = directory_path + '/query_preprocessed.h5ad'
 adata_query.write(query_preprocessed, compression='gzip')
 
-#Concatenate datasets and run neighbor finding (using latent representation), leiden clustering, and umap.
+#Concatenate datasets and run neighbor finding (using scVI latent representation), leiden clustering, and umap.
 print('Concatenated dataset neighbor finding, clustering, and UMAP with scVI latent representation...')
 adata_query.obs['query_leiden'] = adata_query.obs['leiden']
 adata_ref.obs['ref_leiden'] = adata_ref.obs['leiden']
@@ -70,7 +70,7 @@ adata_concat = anndata.concat([adata_ref, adata_query], join='outer', keys=['ref
 sc.pp.neighbors(adata_concat, use_rep="X_scVI")
 sc.tl.leiden(adata_concat, flavor='igraph', n_iterations=2)
 sc.tl.umap(adata_concat)
-sc.pl.umap(adata_concat, color=['dataset', 'leiden', 'query_leiden', 'ref_leiden', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster'], ncols=4, wspace=0.75, save=f'_{save_name}_ref_query_concat_X_scVI.png')
+sc.pl.umap(adata_concat, color=['dataset', 'leiden', 'query_leiden', 'ref_leiden', 'Region', 'Subregion', 'CellClass', 'TopLevelCluster', 'cell_type', 'cell_class'], ncols=4, wspace=0.75, save=f'_{save_name}_ref_query_concat_X_scVI.png')
 ref_query_concatenated = directory_path + '/ref_query_concatenated.h5ad'
 adata_concat.write(ref_query_concatenated, compression='gzip')
 
