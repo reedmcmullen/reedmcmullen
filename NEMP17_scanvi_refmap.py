@@ -82,7 +82,7 @@ scanvi_ref.train(max_epochs=20, n_samples_per_label=100)
 scanvi_ref.save(directory_path + '/ref_scanvi_model/', overwrite=True)
 
 #Run neighbor finding (using scANVI latent representation), leiden clustering, and umap.
-prin('Reference dataset neighbor finding, clustering, and UMAP with scANVI latent representation...')
+print('Reference dataset neighbor finding, clustering, and UMAP with scANVI latent representation...')
 adata_ref.obsm["X_scANVI"] = scanvi_ref.get_latent_representation()
 sc.pp.neighbors(adata_ref, use_rep="X_scANVI")
 sc.tl.leiden(adata_ref, flavor='igraph', n_iterations=2)
