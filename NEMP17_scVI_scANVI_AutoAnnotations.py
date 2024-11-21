@@ -11,7 +11,7 @@ import scvi
 import torch
 
 #Define working directory and settings.
-sc.set_figure_params(figsize=(8, 8), frameon=True)
+sc.set_figure_params(figsize=(6, 6), frameon=True)
 torch.set_float32_matmul_precision("high")
 directory_path = '/wynton/home/pollenlab/reedmcmullen/projects/NEMP17/refmap_NEMP17'
 os.chdir(directory_path)
