@@ -3,9 +3,9 @@
 #install.packages('remotes')
 #library(remotes)
 #remotes::install_github("satijalab/seurat", "seurat5")
-#if (!require("BiocManager", quietly = TRUE))
-#    install.packages("BiocManager")
-#BiocManager::install("zellkonverter")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("zellkonverter")
 
 #Load the required packages.
 library(Seurat)
